@@ -1,2 +1,2 @@
 # Chess-Please
-A daily chess puzzle sitd
+A site to learn chess
