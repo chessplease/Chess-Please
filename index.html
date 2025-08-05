@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Random Chess Please Video</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 2em;
+            background: #f6f6f6;
+            text-align: center;
+        }
+        #video-container {
+            margin-top: 2em;
+        }
+        button {
+            padding: 0.5em 1.5em;
+            font-size: 1em;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Random "Chess Please" Video</h1>
+    <p>Click the button to watch a random video from the Chess Please YouTube channel!</p>
+    <button id="randomBtn">Show Random Video</button>
+    <div id="video-container"></div>
+    <script>
+        // Replace with the actual channel ID if different
+        const channelId = "UCnqW8yR8J2kH6U6R8VJcYhw";
+        const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
+        let videos = [];
+
+        async function fetchVideos() {
+            const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(rssUrl)}`);
+            const data = await response.json();
+            const parser = new DOMParser();
+            const xml = parser.parseFromString(data.contents, "text/xml");
+            const entries = xml.querySelectorAll("entry");
+            videos = Array.from(entries).map(entry => {
+                const id = entry.querySelector("yt\\:videoId, videoId").textContent;
+                const title = entry.querySelector("title").textContent;
+                return { id, title };
+            });
+        }
+
+        function showRandomVideo() {
+            if (videos.length === 0) {
+                document.getElementById("video-container").innerHTML = "<p>No videos found!</p>";
+                return;
+            }
+            const video = videos[Math.floor(Math.random() * videos.length)];
+            document.getElementById("video-container").innerHTML = `
+                <h2>${video.title}</h2>
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/${video.id}" frameborder="0" allowfullscreen></iframe>
+            `;
+        }
+
+        document.getElementById("randomBtn").addEventListener("click", showRandomVideo);
+
+        // Fetch videos on load
+        fetchVideos();
+    </script>
+</body>
+</html>
